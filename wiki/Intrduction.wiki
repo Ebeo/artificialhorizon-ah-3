@@ -1,0 +1,31 @@
+#summary One-sentence summary of this page.
+#labels Featured,Phase-Requirements
+
+= Intro =
+
+This software has been distribuited in a jar archive and developed in java.
+In other words doesn't need any installation routine, the program will be compiled and run by your JVM (Java Virtual Machine) by simply clicking or double clicking on the .jar file.
+However some steps must be carefully taken in order to launch this application.
+
+*NOTE:* The only supported version is the AH-3+, the old one AH-3 is deprecated
+
+==Requirements: PC side==
+
+* Sun's java runtime (JRE, package sun-java6-jre);
+* RXTX serial communication;
+
+This program REQUIRES at least JRE JAVA 6 (or JDK 1.6.0) that is free downloadble from the sun's site for every platform (Linux, OS X, Windows, BeOS,...).
+Once got it you must install the API for serial communication because natively Java doesn't support serial or parallel communications.
+To fix this lack I prefered use the rxtx library. They are free, open source, multiOS, and let your java application to get and write data via serial interface in a confortable way.
+The rxtx library is available at the adress: www.rxtx.org on the same site you can find the instruction for downloading, installing and running the library on your host PC.
+
+Suggestion: before running this application please check whether the library are correctly installed or not.
+You can simply download another java application from the same homepage that echos commands via serial interface.
+By getting and writing data via serial port you can be sure the library are correctly recognize by java. 
+
+= Details =
+
+Add your content here.  Format your content with:
+  * Text in *bold* or _italic_
+  * Headings, paragraphs, and lists
+  * Automatic links to other wiki pages
