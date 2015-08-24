@@ -1,0 +1,117 @@
+# Intro #
+
+This software has been distribuited in a jar archive and developed in java.
+In other words doesn't need any installation routine, the program will be compiled and run by your JVM (Java Virtual Machine) by simply clicking or double clicking on the .jar file.
+However some steps must be carefully taken in order to launch this application.
+
+**NOTE:** The only supported version is the AH-3+, the old one AH-3 is deprecated
+
+## Requirements: PC side ##
+
+  * Sun's java runtime (JRE, package sun-java6-jre);
+  * RXTX serial communication;
+
+This program REQUIRES at least JRE JAVA 6 (or JDK 1.6.0) that is free downloadble from the sun's site for every platform (Linux, OS X, Windows, BeOS,...).
+Once got it you must install the API for serial communication because natively Java doesn't support serial or parallel communications.
+To fix this lack I prefered use the rxtx library. They are free, open source, multiOS, and let your java application to get and write data via serial interface in a confortable way.
+The rxtx library is available at the adress: www.rxtx.org on the same site you can find the instruction for downloading, installing and running the library on your host PC.
+
+Suggestion: before running this application please check whether the library are correctly installed or not.
+You can simply download another java application from the same homepage that echos commands via serial interface.
+By getting and writing data via serial port you can be sure the library are correctly recognize by java.
+
+## Requirements: Microcontroller side ##
+In order to use this application for displaying angle/pitch/yaw datas from your microcontroller (Arduino, PIC, AVR, ARM,....) a common "protocol" for incoming data must be used.
+
+[NOTE: the serial connection is a normal RS-232 transmission, 8 bits, 1 Stop bit, No Parity, and no "hand-shake" or control-flow features are used.
+This decision has been taken to keep the application as simple as possible and ready to use.
+Perhaps, they could be implemented in the future!]
+
+At the moment the protocol used is quite simple and as short as possible, and must be inserted somehow in your code or fimware.
+As a rule the application accepts a string and parses it to find out the needed informations.
+The "protocol" used is:
+
+> 
+
+<angle\_value>
+
+
+
+<type\_info>
+
+     (followed by the carriage and return, note: **NO SPACES BETWEEN THE TWO STRINGS!!!**)
+
+where:
+> 
+
+<angle\_value>
+
+ is whatever number in DEGREES along any axis
+> 
+
+<type\_info>
+
+ specific information whether the previus angle number refers to pitch, roll, yaw and whether it is filtered (processed by your Kalman filter) or is a pure angle (the "reading" by your sensors)
+
+> 
+
+<type\_info>
+
+ can only contain those string informations:
+> kp  : pitch angle computed by your Kalman algorithm;
+> kr  : roll angle computed by your Kalman algorithm;
+> pp  : pitch angle, pure data, directly from your sensors;
+> rr  : roll angle, pure data, directly from your sensors;
+> ky  : yaw angle filtered by your Kalman algorithm;
+> yy  : yaw angle, pure data, collected and measured by your sensors;
+
+For istance...we can have the following situations outcoming from the microcontroller:
+
+  * 34kp    (34 degrees filterd by Kalman, pitch)
+  * -23rr   (-23 degrees not filtered, readed directly from the sensors)
+  * 178pp   ( 178 degrees pure pitch, not filtered)
+  * -1kr    (-1 degree along roll axis, filtered)
+  * 0yy     (0 degrees of pure yaw angle)
+
+**NOTE:** the application accepts only ONE string, so it will fail if you try to send to separate strings (the former for the angle information, the latter for the 
+
+<type\_info>
+
+ information).
+So you should take care in your code to output datas in one single string like in the following example:
+
+  * int disp;             // somewhere in your code at variable initialization
+  * char `buffer_output[8]`;
+  * char `*s1`;
+  * const char `*s2` = "kp";  // we are interested here in pitch angle filtered by kalman
+
+and later in your code:
+
+`/**********************************************`
+`* Set of functions to display the kalman output`
+`* needed only for debugging porpouse!!!!!!!!!!!`
+`**********************************************/`
+  * disp = (int)(pitch\_angle);
+  * itoa(buffer\_output,disp,10);   // Since I m using Hi-Tech PICC18 compiler you should take care of your function definition
+  * s1 = buffer\_output;            // The pointer `*s1` contains the pitch\_angle in degrees converted in a string
+  * strcat(s1, s2);                // Both strings are merged in one single string
+  * printf("%s\n", buffer\_output);
+
+
+## General Description and Use ##
+This program is quite simple and understandable for eveybody....
+I followed the most famous rule in the world: KISS...
+
+As a default the RIGHT display visualizes filtered data and the LEFT display visualizes the pure data
+At the moment no command nor function swaps the displays.
+
+Once the application is running from the top left insert the desired Baudrate, on the right you find a list of serial ports FOUND on your system. Select which one you intend to use and click on Open Serial.
+To close the serial stream click on Close Serial. The latter command frees the serial port and the resources related to the port back to the system.
+
+Both displays start visualizing incoming data as soon as data is available from the serial port.
+
+## Revision and bug correction ##
+
+- 16 Mai 2010:
+> Corrected the bug related to close the serial port while receiving.
+> The bug caused the program to hang and freeze on the screen without any possibility to close it. Most present when running it on UNIX workstations
